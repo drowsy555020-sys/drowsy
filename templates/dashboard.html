@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drowsiness Safety Dashboard | Advanced Monitoring System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Real-time drowsiness detection and safety monitoring dashboard">
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient@1.0.3/dist/chartjs-plugin-gradient.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <style>
+        .metric-card {
+            background: linear-gradient(135deg, rgba(15, 22, 41, 0.9) 0%, rgba(26, 31, 58, 0.9) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .metric-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.active {
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+        }
+
+        .status-indicator.warning {
+            background: #facc15;
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+        }
+
+        .status-indicator.danger {
+            background: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+            animation: heartbeat 1s infinite;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            padding: 1rem;
+        }
+
+        .alert-item {
+            background: linear-gradient(135deg, rgba(15, 22, 41, 0.95) 0%, rgba(26, 31, 58, 0.95) 100%);
+            border-left: 4px solid;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            animation: slideInRight 0.5s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .alert-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .alert-item.warning {
+            border-left-color: #facc15;
+        }
+
+        .alert-item.danger {
+            border-left-color: #ef4444;
+        }
+
+        .alert-item.info {
+            border-left-color: #38bdf8;
+        }
+
+        .control-panel {
+            background: linear-gradient(135deg, rgba(15, 22, 41, 0.95) 0%, rgba(26, 31, 58, 0.95) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #22c55e;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes numberCount {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .number-animate {
+            animation: numberCount 0.6s ease-out;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark px-4">
+        <div class="d-flex align-items-center gap-3">
+            <span class="navbar-brand mb-0">
+                <i class="bi bi-shield-exclamation"></i>
+                Drowsiness Safety System
+            </span>
+            <span class="live-badge">
+                <span class="live-dot"></span>
+                LIVE
+            </span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-secondary small">
+                <i class="bi bi-device-ssd"></i> Device: {{ device_id }}
+            </span>
+            <a href="/worker-dashboard" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-person-badge"></i> Worker Dashboard
+            </a>
+            <a href="/drowsiness-history" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-clock-history"></i> History
+            </a>
+            <a href="/sessions" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-calendar-check"></i> Sessions
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4 px-4">
+        <!-- Real-time Metrics Grid -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="metric-card fade-in" style="animation-delay: 0.1s">
+                    <div class="metric-icon">
+                        <i class="bi bi-arrow-up-down"></i>
+                    </div>
+                    <div class="card-title">Pitch Angle</div>
+                    <div class="metric" id="pitchValue">{{ live.pitch or 0 }}°</div>
+                    <div class="metric-small">Head position</div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="metric-card fade-in" style="animation-delay: 0.2s">
+                    <div class="metric-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="card-title">Gyro Y</div>
+                    <div class="metric" id="gyroValue">{{ live.gyroY or 0 }}</div>
+                    <div class="metric-small">Rotation rate</div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="metric-card fade-in" style="animation-delay: 0.3s">
+                    <div class="metric-icon">
+                        <i class="bi bi-thermometer-half"></i>
+                    </div>
+                    <div class="card-title">Body Temperature</div>
+                    <div class="metric" id="tempValue">{{ live.bodyTemp or 0 }}°C</div>
+                    <div class="metric-small">Core temp</div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="metric-card fade-in" style="animation-delay: 0.4s">
+                    <div class="metric-icon">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <div class="card-title">Heart Rate</div>
+                    <div class="metric" id="heartRateValue">{{ live.heartRate or 0 }} <small style="font-size: 0.6em">bpm</small></div>
+                    <div class="metric-small">Beats per minute</div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="metric-card fade-in" style="animation-delay: 0.5s">
+                    <div class="metric-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="card-title">Worked Hours</div>
+                    <div class="metric">{{ worked_hours }} <small style="font-size: 0.6em">h</small></div>
+                    <div class="metric-small">Total today</div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="metric-card fade-in" style="animation-delay: 0.6s">
+                    <div class="metric-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <div class="card-title">Drowsy State</div>
+                    {% if live.isDrowsy %}
+                        <div class="metric status-bad" id="drowsyState">
+                            <span class="status-indicator danger"></span>DROWSY
+                        </div>
+                    {% else %}
+                        <div class="metric status-ok" id="drowsyState">
+                            <span class="status-indicator active"></span>NORMAL
+                        </div>
+                    {% endif %}
+                    <div class="metric-small">Current status</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Control Panel -->
+        <div class="row g-4">
+            <!-- Live Motion Chart -->
+            <div class="col-lg-8">
+                <div class="card chart-wrapper">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-graph-up"></i> Head Movement (Live)
+                            </h5>
+                            <small class="text-muted">Real-time sensor data visualization</small>
+                        </div>
+                        <span class="badge bg-info">
+                            <i class="bi bi-arrow-repeat"></i> Auto-refresh
+                        </span>
+                    </div>
+                    <canvas id="motionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Control Panel & Alerts -->
+            <div class="col-lg-4">
+                <!-- Recent Alerts -->
+                <div class="card">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-bell-fill"></i> Recent Alerts
+                    </h5>
+                    <div id="alertsContainer" style="max-height: 400px; overflow-y: auto;">
+                        {% if alerts %}
+                            {% for a in alerts %}
+                                <div class="alert-item {% if 'DROWSINESS' in a.type or 'HIGH' in a.type %}danger{% elif 'HEAD' in a.type or 'NOD' in a.type %}warning{% else %}info{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <strong class="text-white">{{ a.type }}</strong>
+                                        <small class="text-muted">{{ a.timestamp.strftime('%H:%M') if a.timestamp else 'Now' }}</small>
+                                    </div>
+                                    <small class="text-muted">{{ a.message }}</small>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-check-circle" style="font-size: 2rem; color: #22c55e;"></i>
+                                <p class="mt-2 mb-0">No active alerts</p>
+                                <small>All systems normal</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        // Initialize chart with enhanced styling
+        const ctx = document.getElementById('motionChart').getContext('2d');
+        
+        const motionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Pitch (°)',
+                        data: [],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#6366f1',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Gyro Y',
+                        data: [],
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#ec4899',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 750,
+                    easing: 'easeInOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#e5e7eb',
+                            font: {
+                                family: 'Inter',
+                                size: 12,
+                                weight: '600'
+                            },
+                            padding: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 22, 41, 0.95)',
+                        titleColor: '#e5e7eb',
+                        bodyColor: '#e5e7eb',
+                        borderColor: '#6366f1',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(30, 41, 59, 0.5)',
+                            lineWidth: 1
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                family: 'Inter',
+                                size: 11
+                            }
+                        },
+                        border: {
+                            color: 'rgba(30, 41, 59, 0.5)'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // Initial chart data
+        const initialPitch = {% if live and live.pitch is defined %}{{ live.pitch }}{% else %}0{% endif %};
+        const initialGyroY = {% if live and live.gyroY is defined %}{{ live.gyroY }}{% else %}0{% endif %};
+        updateChart(initialPitch, initialGyroY);
+
+        // Update chart function (called from dashboard.js)
+        function updateChart(pitch, gyroY) {
+            if (motionChart.data.labels.length > 30) {
+                motionChart.data.labels.shift();
+                motionChart.data.datasets[0].data.shift();
+                motionChart.data.datasets[1].data.shift();
+            }
+            motionChart.data.labels.push('');
+            motionChart.data.datasets[0].data.push(pitch);
+            motionChart.data.datasets[1].data.push(gyroY);
+            motionChart.update('none');
+        }
+    </script>
+</body>
+</html>
