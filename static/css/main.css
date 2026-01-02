@@ -1,0 +1,762 @@
+/* ===============================
+   Advanced Drowsiness Detection Dashboard
+   Professional, Colorful, Animated
+================================ */
+
+/* ===============================
+   Root Theme Variables
+================================ */
+:root {
+    /* Dark Theme Base */
+    --bg-main: #0a0e27;
+    --bg-card: #0f1629;
+    --bg-card-hover: #151b2e;
+    --border: #1e293b;
+    --border-glow: rgba(99, 102, 241, 0.3);
+
+    /* Text Colors */
+    --text-main: #e5e7eb;
+    --text-muted: #94a3b8;
+    --text-bright: #f8fafc;
+
+    /* Accent Colors - Vibrant & Professional */
+    --primary: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.5);
+    --secondary: #8b5cf6;
+    --success: #22c55e;
+    --success-glow: rgba(34, 197, 94, 0.4);
+    --warning: #facc15;
+    --warning-glow: rgba(250, 204, 21, 0.4);
+    --danger: #ef4444;
+    --danger-glow: rgba(239, 68, 68, 0.5);
+    --info: #38bdf8;
+    --info-glow: rgba(56, 189, 248, 0.4);
+    --pink: #ec4899;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+    --orange: #f97316;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --gradient-danger: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+    --gradient-success: linear-gradient(135deg, #22c55e 0%, #06b6d4 100%);
+    --gradient-warning: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+    --gradient-card: linear-gradient(135deg, #0f1629 0%, #1a1f3a 100%);
+    --gradient-bg: radial-gradient(ellipse at top, #1e1b4b 0%, #0a0e27 50%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px var(--primary-glow);
+    --shadow-danger-glow: 0 0 20px var(--danger-glow);
+    --shadow-success-glow: 0 0 20px var(--success-glow);
+}
+
+/* ===============================
+   Global Styles & Animations
+================================ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--primary-glow);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--primary-glow), 0 0 30px var(--primary-glow);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.1);
+    }
+    50% {
+        transform: scale(1);
+    }
+    75% {
+        transform: scale(1.05);
+    }
+}
+
+body {
+    margin: 0;
+    background: var(--gradient-bg);
+    background-attachment: fixed;
+    color: var(--text-main);
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    animation: fadeIn 0.6s ease-out;
+    overflow-x: hidden;
+}
+
+/* Animated Background Particles */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ===============================
+   Navbar
+================================ */
+.navbar {
+    background: rgba(15, 22, 41, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    animation: slideInLeft 0.6s ease-out;
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-brand i {
+    animation: pulse 2s infinite;
+    color: var(--primary);
+    -webkit-text-fill-color: var(--primary);
+}
+
+/* ===============================
+   Cards - Enhanced with Animations
+================================ */
+.card {
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeIn 0.6s ease-out;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transition: left 0.5s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-glow), var(--shadow-lg);
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card-title {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ===============================
+   Metrics - Animated Values
+================================ */
+.metric {
+    font-size: 2rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.metric-small {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.metric-card {
+    position: relative;
+    padding: 1.5rem;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover::after {
+    transform: scaleX(1);
+}
+
+/* Status Colors with Glow */
+.status-ok {
+    color: var(--success) !important;
+    -webkit-text-fill-color: var(--success) !important;
+    text-shadow: 0 0 10px var(--success-glow);
+    animation: pulse 2s infinite;
+}
+
+.status-warn {
+    color: var(--warning) !important;
+    -webkit-text-fill-color: var(--warning) !important;
+    text-shadow: 0 0 10px var(--warning-glow);
+    animation: pulse 1.5s infinite;
+}
+
+.status-bad {
+    color: var(--danger) !important;
+    -webkit-text-fill-color: var(--danger) !important;
+    text-shadow: 0 0 15px var(--danger-glow);
+    animation: heartbeat 1s infinite;
+}
+
+/* ===============================
+   Buttons - Modern & Animated
+================================ */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-success {
+    background: var(--gradient-success);
+    color: white;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.btn-success:hover {
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+}
+
+.btn-danger {
+    background: var(--gradient-danger);
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+.btn-warning {
+    background: var(--gradient-warning);
+    color: #0a0e27;
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.btn-outline-light {
+    border: 2px solid var(--border);
+    color: var(--text-main);
+    background: transparent;
+}
+
+.btn-outline-light:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--primary);
+    color: var(--text-bright);
+}
+
+.btn-control {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+/* ===============================
+   Alerts - Enhanced Design
+================================ */
+.alert-box {
+    background: var(--gradient-card);
+    border-left: 4px solid var(--warning);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    animation: slideInRight 0.5s ease-out;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert-box::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--gradient-warning);
+    animation: pulse 2s infinite;
+}
+
+.alert-box:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+}
+
+.alert-box.danger {
+    border-left-color: var(--danger);
+}
+
+.alert-box.danger::before {
+    background: var(--gradient-danger);
+}
+
+.alert-box.success {
+    border-left-color: var(--success);
+}
+
+.alert-box.success::before {
+    background: var(--gradient-success);
+}
+
+/* ===============================
+   Charts Container
+================================ */
+.chart-container {
+    position: relative;
+    padding: 1.5rem;
+    background: var(--gradient-card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    animation: fadeIn 0.8s ease-out;
+}
+
+.chart-container:hover {
+    box-shadow: var(--shadow-glow), var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+/* ===============================
+   Tables - Modern Design
+================================ */
+.table {
+    color: var(--text-main);
+    background: transparent;
+}
+
+.table thead th {
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background: var(--bg-card-hover);
+    transform: scale(1.01);
+    box-shadow: var(--shadow-sm);
+}
+
+.table tbody td {
+    padding: 1rem;
+}
+
+/* ===============================
+   Badges - Colorful & Animated
+================================ */
+.badge {
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.bg-success {
+    background: var(--gradient-success) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+.bg-warning {
+    background: var(--gradient-warning) !important;
+    color: #0a0e27 !important;
+    box-shadow: 0 2px 8px rgba(250, 204, 21, 0.3);
+}
+
+.bg-danger {
+    background: var(--gradient-danger) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.bg-info {
+    background: linear-gradient(135deg, var(--info) 0%, var(--cyan) 100%) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+}
+
+.bg-primary {
+    background: var(--gradient-primary) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* ===============================
+   Loading Spinner
+================================ */
+.spinner {
+    border: 3px solid var(--border);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: rotate 1s linear infinite;
+}
+
+/* ===============================
+   Notification Toast
+================================ */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-lg);
+    animation: slideInRight 0.5s ease-out;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toast.success {
+    border-left: 4px solid var(--success);
+}
+
+.toast.danger {
+    border-left: 4px solid var(--danger);
+}
+
+.toast.warning {
+    border-left: 4px solid var(--warning);
+}
+
+/* ===============================
+   Stats Cards
+================================ */
+.stats-card {
+    background: var(--gradient-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--primary);
+}
+
+/* ===============================
+   Progress Bars
+================================ */
+.progress {
+    height: 8px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 10px;
+    transition: width 0.6s ease;
+    box-shadow: 0 0 10px var(--primary-glow);
+    animation: shimmer 2s infinite;
+    background-size: 200% 100%;
+}
+
+/* ===============================
+   Mobile Responsive
+================================ */
+@media (max-width: 768px) {
+    .metric {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+
+    .btn-control {
+        padding: 0.875rem;
+    }
+}
+
+/* ===============================
+   Utility Classes
+================================ */
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+.glow {
+    animation: glow 2s infinite;
+}
+
+.float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* ===============================
+   Scrollbar Styling
+================================ */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* ===============================
+   Link Styles
+================================ */
+a {
+    text-decoration: none;
+    color: var(--info);
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
