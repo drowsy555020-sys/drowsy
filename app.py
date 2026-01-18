@@ -6,12 +6,11 @@ from routes.dashboard import dashboard_bp
 from routes.api import api_bp
 from routes.worker import worker_bp
 import os
-import threading
-import time
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
 
 def create_app():
     app = Flask(__name__)
@@ -42,34 +41,13 @@ def create_app():
         return {
             "status": "RUNNING",
             "service": "Drowsiness Detection Backend",
-            "firebase": "CONNECTED"
+            "firebase": "CONNECTED",
         }
 
     return app
 
 
 app = create_app()
-
-# ===============================
-# Background Session Tracker
-# ===============================
-def track_sessions():
-    """
-    Background thread to track device sessions
-    """
-    from services.session_tracker import check_and_update_sessions
-    
-    while True:
-        try:
-            device_id = app.config["DEVICE_ID"]
-            check_and_update_sessions(device_id)
-        except Exception as e:
-            print(f"Error in session tracker: {e}")
-        time.sleep(30)  # Check every 30 seconds
-
-# Start background thread
-session_thread = threading.Thread(target=track_sessions, daemon=True)
-session_thread.start()
 
 # ===============================
 # Render / Local Run
